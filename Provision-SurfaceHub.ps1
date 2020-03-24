@@ -15,7 +15,7 @@
 
 #User Input Required
 $Credential = Get-Credential
-$UPN = "SurfaceHub-tomdouche@netrixebc.com"
+$UPN = "SurfaceHubtomdouche@netrixebc.com"
 $usagelocation = "US"
 $workspacename = "netrixebchub"
 $ResourceGroupName = "USE-SurfaceHub-RG"
