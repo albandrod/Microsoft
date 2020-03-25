@@ -2,11 +2,10 @@
 
 #This script will
 #Create Surface Hub account
-#Create AAD Device Group
-#Configure AAD Conditional Access
-#Provision Azure Log Analytics workspace
+#Set location usage & Meeting Room license
+#Create Dynamic AAD Device Group on OS = SurfaceHub
+#Provision Azure Log Analytics workspace and retrieve customerID & key
 #Configure Intune policies
-#Setup monitoring to Netrix
 
 #PowerShell modules required
 #O365
@@ -15,7 +14,7 @@
 
 #User Input Required
 $Credential = Get-Credential
-$UPN = "SurfaceHubtomdouche@netrixebc.com"
+$UPN = "Test03252020-5@netrixebc.com"
 $usagelocation = "US"
 $workspacename = "netrixebchub"
 $ResourceGroupName = "USE-SurfaceHub-RG"
@@ -29,7 +28,7 @@ $params1 = @{"OwnerEmail"="$emailowner"}
 
 #Connect to resources
 $365Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.outlook.com/powershell -Credential $Credential -Authentication Basic –AllowRedirection
-$ImportResults = Import-PSSession $365Session
+$ImportResults = Import-PSSession $365Session -AllowClobber
 Connect-AzureAD
 Add-AzAccount
 $subscription = get-azsubscription |out-gridview -passthru
@@ -37,7 +36,6 @@ Select-azsubscription -subscription $subscription
 
 #Create Surface Hub account
 New-Mailbox -MicrosoftOnlineServicesID $UPN -Alias $alias -Name $UPN -Room -EnableRoomMailboxAccount $true -RoomMailboxPassword (ConvertTo-SecureString  -String "$password" -AsPlainText -Force)
-Start-Sleep 15
 Set-CalendarProcessing -Identity $UPN -AutomateProcessing AutoAccept -AddOrganizerToSubject $false –AllowConflicts $false –DeleteComments $false -DeleteSubject $false -RemovePrivateProperty $false -AddAdditionalResponse $true -AdditionalResponse "This room is equipped with a Surface Hub"
 $user = Get-AzureADUser -SearchString "$($alias)"
 
@@ -58,7 +56,7 @@ $licenses.AddLicenses = $license
 Set-AzureADUserLicense -ObjectId $user.objectid -AssignedLicenses $licenses
 
 #Create AAD Device Group
-New-AzureADMSGroup -DisplayName "Surface Hub Device Group" -Description "Surface Hub Devices" -MailEnabled $False -MailNickName "SurfaceHubDeviceGroup" -SecurityEnabled $True -GroupTypes "DynamicMembership" -MembershipRule "(device.deviceOSType -eq ""SurfaceHub"")" -MembershipRuleProcessingState "On"
+$group = New-AzureADMSGroup -DisplayName "Surface Hub Device Group" -Description "Surface Hub Devices" -MailEnabled $False -MailNickName "SurfaceHubDeviceGroup" -SecurityEnabled $True -GroupTypes "DynamicMembership" -MembershipRule "(device.deviceOSType -eq ""SurfaceHub"")" -MembershipRuleProcessingState "On"
 
 #Provision Azure Log Analytics workspace
 New-AzResourceGroup -Name $ResourceGroupName -Location $RGLocation -Tag $params1
@@ -69,8 +67,7 @@ $LAWorkspaceKey = (Get-AzOperationalInsightsWorkspaceSharedKey -ResourceGroupNam
 #Configure Intune policies
 
 
-#Setup monitoring to Netrix
-
-
 ##Clean-up
 #Remove-Mailbox -Identity $UPN -Confirm
+#Remove-AzureADMSGroup -Id $group.Id
+#Remove-AzResourceGroup -Name $ResourceGroupName 
