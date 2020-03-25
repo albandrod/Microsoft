@@ -1,5 +1,10 @@
 ﻿#Requires -Modules @{ModuleName="AzureADPreview";ModuleVersion="2.0.2.85"}
 
+#Pre-Reqs
+##Exchange access to create mailbox
+##AAD access to create group, license user
+##Azure subscription with rights to create resources
+
 #This script will
 #Create Surface Hub account
 #Set location usage & Meeting Room license
@@ -8,13 +13,12 @@
 #Configure Intune policies
 
 #PowerShell modules required
-#O365
 #AzureADPreview
 #Azure
 
 #User Input Required
 $Credential = Get-Credential
-$UPN = "Test03252020-5@netrixebc.com"
+$UPN = "Test03252020-12@netrixebc.com"
 $usagelocation = "US"
 $workspacename = "netrixebchub"
 $ResourceGroupName = "USE-SurfaceHub-RG"
@@ -36,6 +40,7 @@ Select-azsubscription -subscription $subscription
 
 #Create Surface Hub account
 New-Mailbox -MicrosoftOnlineServicesID $UPN -Alias $alias -Name $UPN -Room -EnableRoomMailboxAccount $true -RoomMailboxPassword (ConvertTo-SecureString  -String "$password" -AsPlainText -Force)
+Start-Sleep 15
 Set-CalendarProcessing -Identity $UPN -AutomateProcessing AutoAccept -AddOrganizerToSubject $false –AllowConflicts $false –DeleteComments $false -DeleteSubject $false -RemovePrivateProperty $false -AddAdditionalResponse $true -AdditionalResponse "This room is equipped with a Surface Hub"
 $user = Get-AzureADUser -SearchString "$($alias)"
 
@@ -70,4 +75,4 @@ $LAWorkspaceKey = (Get-AzOperationalInsightsWorkspaceSharedKey -ResourceGroupNam
 ##Clean-up
 #Remove-Mailbox -Identity $UPN -Confirm
 #Remove-AzureADMSGroup -Id $group.Id
-#Remove-AzResourceGroup -Name $ResourceGroupName 
+#Remove-AzResourceGroup -Name $ResourceGroupName
