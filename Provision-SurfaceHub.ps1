@@ -19,12 +19,12 @@
 
 #User Input Required
 $Credential = Get-Credential
-$UPN = "Test03252020-20@netrixebc.com"
+$UPN = "SurfaceHub@contoso.com"
 $usagelocation = "US"
-$workspacename = "netrixebchub"
+$workspacename = "surfacehub"
 $ResourceGroupName = "USE-SurfaceHub-RG"
 $RGLocation = "eastus"
-$emailowner = "rlillyadmin@netrixebc.com"
+$emailowner = "owner@contoso.com"
 
 #Calculated Variables
 $alias = $upn.split("@")[0]
