@@ -16,15 +16,15 @@
 #AzureADPreview
 #Azure
 #Microsoft.Graph.Intune
+#ExchangeOnlineManagement
 
 #User Input Required
-$Credential = Get-Credential
-$UPN = "SurfaceHub@contoso.com"
+$UPN = "SurfaceHub@netrixebc.com"
 $usagelocation = "US"
 $workspacename = "surfacehub"
 $ResourceGroupName = "USE-SurfaceHub-RG"
 $RGLocation = "eastus"
-$emailowner = "owner@contoso.com"
+$emailowner = "rlillyadmin@netrixebc.com"
 
 #Calculated Variables
 $alias = $upn.split("@")[0]
@@ -32,10 +32,9 @@ $password = (New-Guid).tostring()
 $params1 = @{"OwnerEmail"="$emailowner"}
 
 #Connect to resources
-$365Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ps.outlook.com/powershell -Credential $Credential -Authentication Basic –AllowRedirection
-$ImportResults = Import-PSSession $365Session -AllowClobber
 Connect-AzureAD
-Connect-MSGraph -Credential $Credential
+Connect-MSGraph
+Connect-ExchangeOnline
 Add-AzAccount
 $subscription = get-azsubscription |out-gridview -passthru
 Select-azsubscription -subscription $subscription
