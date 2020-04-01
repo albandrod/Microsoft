@@ -19,12 +19,12 @@
 #ExchangeOnlineManagement
 
 #User Input Required
-$UPN = "SurfaceHub@netrixebc.com"
+$UPN = "SurfaceHub@contoso.com"
 $usagelocation = "US"
 $workspacename = "surfacehub"
 $ResourceGroupName = "USE-SurfaceHub-RG"
 $RGLocation = "eastus"
-$emailowner = "rlillyadmin@netrixebc.com"
+$emailowner = "owner@contoso.com"
 
 #Calculated Variables
 $alias = $upn.split("@")[0]
